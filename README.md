@@ -1,80 +1,93 @@
-# TensorFlow Lite Micro Library for Arduino
 
-This repository has the code (including examples) needed to use Tensorflow Lite Micro on an Arduino.
+# Arduino TensorFlow Lite Micro Human Detection Library
 
-## Table of contents
+This repository contains the code and necessary examples to perform human detection using TensorFlow Lite Micro on the Arduino Nano 33 BLE Sense, integrated with the Arducam 2MP Plus camera module.
+
+---
+
+## Table of Contents
 <!--ts-->
-* [Table of contents](#table-of-contents)
-* [Build Status](#build-status)
-* [How to Install](#how-to-install)
-  * [GitHub](#github)
-  * [Checking your Installation](#checking-your-installation)
-* [Compatibility](#compatibility)
-* [License](#license)
-* [Contributing](#contributing)
+* [Project Overview](#project-overview)  
+* [Hardware Requirements](#hardware-requirements)  
+* [Hardware Integration](#hardware-integration)  
+* [Installing Arduino IDE and Libraries](#installing-arduino-ide-and-libraries)  
+* [Running the Program](#running-the-program)  
+* [Customizing the Model and Configuration](#customizing-the-model-and-configuration)
 <!--te-->
 
-## Build Status
+---
 
-Build Type          |     Status    |
----------------     | ------------- |
-Arduino CLI on Linux  | [![Arduino](https://github.com/tensorflow/tflite-micro-arduino-examples/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/tensorflow/tflite-micro-arduino-examples/actions/workflows/ci.yml)
-Sync from tflite-micro  | [![Sync from tflite-micro](https://github.com/tensorflow/tflite-micro-arduino-examples/actions/workflows/sync.yml/badge.svg)](https://github.com/tensorflow/tflite-micro-arduino-examples/actions/workflows/sync.yml)
+## Project Overview  
+This project enables real-time human detection using TinyML models directly on the Arduino Nano 33 BLE Sense. The system utilizes a quantized TensorFlow Lite model to efficiently run inferences with minimal hardware resources, making it ideal for low-power IoT applications.  
 
-## How to Install
+---
 
-### GitHub
+## Hardware Requirements  
 
-The officially supported TensorFlow Lite Micro library for Arduino resides
-in the [tflite-micro-arduino-examples](https://github.com/tensorflow/tflite-micro-arduino-examples)
-GitHub repository.
-To install the in-development version of this library, you can use the
-latest version directly from the GitHub repository. This requires you clone the
-repo into the folder that holds libraries for the Arduino IDE. The location for
-this folder varies by operating system, but typically it's in
-`~/Arduino/libraries` on Linux, `~/Documents/Arduino/libraries/` on MacOS, and
-`My Documents\Arduino\Libraries` on Windows.
+| Hardware                    | Quantity |
+|-----------------------------|----------|
+| Arduino Nano 33 BLE Sense Rev2 | 1        |
+| Arducam OV2640 2MP Plus     | 1        |
+| Breadboard                  | 1        |
+| Male to Male Jumper Wires   | 8        |
+| Header Pins                 | 2        |
+| Micro USB Cable             | 1        |
+| Programming Device          | 1        |
 
-Once you're in that folder in the terminal, you can then grab the code using the
-git command line tool:
+*Refer to Table 1.2.1 in the documentation for detailed specifications.*
 
-```
-git clone https://github.com/tensorflow/tflite-micro-arduino-examples Arduino_TensorFlowLite
-```
+---
 
-To update your clone of the repository to the latest code, use the following terminal commands:
-```
-cd Arduino_TensorFlowLite
-git pull
-```
+## Hardware Integration  
 
-### Checking your Installation
+Follow the pin mapping table below to establish proper SPI and I2C connections between the Arduino and Arducam modules:
 
-Once the library has been installed, you should then start the Arduino IDE.
-You will now see an `Arduino_TensorFlowLite`
-entry in the `File -> Examples` menu of the Arduino IDE. This submenu contains a list
-of sample projects you can try out.
+| Arduino Nano 33 BLE Sense | Arducam 2MP Plus | Functionality      |
+|---------------------------|------------------|--------------------|
+| D7                        | CS               | SPI Communication  |
+| D11                       | MOSI             | SPI Communication  |
+| D12                       | MISO             | SPI Communication  |
+| D13                       | SCK              | SPI Communication  |
+| GND                       | GND              | Power              |
+| 3.3V                      | VCC              | Power              |
+| A4                        | SDA              | I2C Communication  |
+| A5                        | SCL              | I2C Communication  |
 
-![Hello World](docs/hello_world_screenshot.png)
+*Refer to the official [Arduino Nano 33 BLE Sense Datasheet](https://docs.arduino.cc/resources/datasheets/ABX00069-datasheet.pdf) and the [Arducam 2MP Plus Guide](https://www.arducam.com/arducam-2mp-spi-camera-b0067-arduino.html) for additional details.*
 
-## Compatibility
+---
 
-This library is designed for the `Arduino Nano 33 BLE Sense` board. The framework
-code for running machine learning models should be compatible with most Arm Cortex
-M-based boards, such as the `Raspberry Pi Pico`, but the code to access peripherals
-like microphones, cameras, and accelerometers is specific to the `Nano 33 BLE Sense`.
+## Installing Arduino IDE and Libraries  
 
-## License
+Ensure that the following libraries are installed in your Arduino IDE:
 
-This code is made available under the Apache 2 license.
+| Library Name         | Description                         |
+|----------------------|-------------------------------------|
+| Arduino_TensorFlowLite | Run TFLite Micro models on Arduino |
+| Arducam              | Interface with Arducam cameras     |
+| JPEGDecoder          | Decode JPEG images to raw formats  |
 
-## Contributing
+Follow the detailed setup instructions in section 1.2.3 of the project documentation.
 
-Forks of this library are welcome and encouraged. If you have bug reports or
-fixes to contribute, the source of this code is at [https://github.com/tensorflow/tflite-micro](http://github.com/tensorflow/tflite-micro)
-and all issues and pull requests should be directed there.
+---
 
-The code here is created through an automatic project generation process
-and may differ from
-that source of truth, since it's cross-platform and needs to be modified to
-work within the Arduino IDE.
+## Running the Program  
+
+1. Open the Arduino IDE and connect your Arduino Nano 33 BLE Sense via USB.  
+2. Select the correct board and port under the Tools menu.  
+3. Load the program from:  
+   `File > Examples > Arduino_TensorFlowLite > person_detection`  
+4. Upload the code to your Arduino.  
+5. The device will start performing inferences and indicate detections via the onboard LEDs:
+   - **Green LED**: Person detected.
+   - **Blue LED**: No person detected.
+6. To view detailed inference outputs, open the Serial Monitor from the Arduino IDE.
+
+---
+
+## Customizing the Model and Configuration  
+
+- Update `model_settings.h` to change input shape or image channels.  
+- Adjust inference logic and thresholds in `person_detection.ino`.  
+- To deploy a new model, convert your `.pth` model to `.tflite`, then to a C array using `xxd` or similar tools, and replace `person_detect_model_data.cpp`.  
+- For optimizing memory, manually register only the necessary TFLite Micro operations using `MicroMutableOpResolver`.  
